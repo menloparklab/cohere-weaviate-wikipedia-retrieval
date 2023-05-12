@@ -145,4 +145,58 @@ gunicorn app:app
    The `query` field should contain the query for which you want to generate an answer. The `k` and `top_n` fields are optional and should be set to the number of most similar embeddings you want to retrieve and the number of compressed documents you want to consider, respectively. If the `k` and `top_n` fields are not set, the default values are 9 and 3, respectively.
 
 
+5. `/chat-no-history`
+
+    This route allows the user to chat with the application without any historical chat context. It accepts the following parameters in a JSON request body:
+    - `query`: The user's query. Required.
+    - `k`: An integer value for the number of results to retrieve from the model. Optional, defaults to 9.
+    - `top_n`: An integer value for the number of top search results to consider for generating an answer. Optional, defaults to 3.
+
+    The route then uses the `compression` function to retrieve the top `k` results from the model, and constructs a prompt using the user's query. The prompt is passed to the machine learning model, and the output is parsed using a `parser` object. If a language is detected in the output, it is used for subsequent queries, otherwise the default is English. The `RetrievalQA` class is used to generate a response using the `qa` object, and the search result is returned as a JSON response.
+
+    Example JSON
+
+    ```json
+    {
+        "query": "What is the capital of France?",
+        "k": 5,
+        "top_n": 2
+    }
+    ```
+
+    Example Response
+
+    ```json
+    {
+        "search_result": "Paris is the capital of France."
+    }
+    ```
+
+6. `/chat-with-history`
+
+    This route allows the user to chat with the application using historical chat context. It accepts the same parameters as the previous route:
+    - `query`: The user's query. Required.
+    - `k`: An integer value for the number of results to retrieve from the model. Optional, defaults to 9.
+    - `top_n`: An integer value for the number of top search results to consider for generating an answer. Optional, defaults to 3.
+
+    In addition, this route maintains a memory of past conversations using the `ConversationBufferMemory` class, and generates responses using the `ConversationalRetrievalChain` class. The memory key for this route is set to `"chat_history"`. The search result is returned as a JSON response.
+
+    Example Json
+
+    ```json
+    {
+        "query": "What is the capital of Spain?",
+        "k": 3,
+        "top_n": 1
+    }
+    ```
+
+    Example Response
+
+    ```json
+    {
+        "search_result": "The capital of Spain is Madrid."
+    }
+    ```
+
   
