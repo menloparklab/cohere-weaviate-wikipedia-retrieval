@@ -1,6 +1,6 @@
 # Project Name
 
-Cohere Weviate Wikipedia Retrieval using LangChain
+Cohere Weaviate Wikipedia Retrieval using LangChain
 
 ## Description
 
